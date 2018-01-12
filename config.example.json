@@ -1,0 +1,26 @@
+{
+    "api": {
+        "xmr-stak": {
+            "rig1": {
+                "tags": {
+                    "location": "somewhere"
+                },
+                "url": "http://192.168.1.1:9000/api.json"
+            },
+            "rig2": {
+                "url": "http://192.168.1.2:9000/api.json"
+            }
+        },
+        "pool-api": {
+            "etn.spacepools.org": {
+                "tags": {
+                    "location": "elsewhere"
+                },
+                "url": "https://api.etn.spacepools.org/v1",
+                "addresses": {
+                    "james": "your_etn_address"
+                }
+            }
+        }
+    }
+}
