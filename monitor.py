@@ -65,7 +65,6 @@ for k, v in config["api"].items():
                     tags = {**tags, **config["tags"]}
                 # total stats
                 try:
-                    time.sleep(5) # do not request too fast
                     ret_total = requests.get("{}/stats/address/{}".format(config["url"], address), timeout=5).json()
                     for point in ret_total["charts"]["hashrate"]:
                         data = {
@@ -78,7 +77,7 @@ for k, v in config["api"].items():
                     print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                 # worker stats
                 try:
-                    time.sleep(5) # do not request too fast
+                    time.sleep(10) # do not request too fast
                     ret_workers = requests.get("{}/stats/workerStats/{}".format(config["url"], address), timeout=5).json()
                     for worker in ret_workers["workers"]:
                         tags["rig_id"] = worker["rigId"]
