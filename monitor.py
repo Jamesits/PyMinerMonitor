@@ -85,7 +85,7 @@ for k, v in config["api"].items():
                         data = {
                             "hashrate": worker["hashRate"],
                         }
-                        print(InfluxDBLineProtocol("miner-pool-api", tags, data))   
+                        print(InfluxDBLineProtocol("miner-pool-api-per-rig", tags, data))   
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
                     print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                 except json.decoder.JSONDecodeError:
