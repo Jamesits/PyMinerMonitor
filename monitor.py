@@ -49,7 +49,7 @@ for k, v in config["api"].items():
                     "ping": ret["connection"]["ping"],
                 }
                 print(InfluxDBLineProtocol("miner-xmr-stak", tags, data))
-            except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.packages.urllib3.exceptions.NewConnectionError):
+            except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, ConnectionRefusedError):
                 print("Failed to read data from device {}".format(name), file=sys.stderr)
             except json.decoder.JSONDecodeError:
                 print("Unexcepted data from device {}".format(name), file=sys.stderr)
@@ -78,7 +78,7 @@ for k, v in config["api"].items():
                     print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                 # worker stats
                 try:
-                    time.sleep(20) # do not request too fast
+                    time.sleep(5) # do not request too fast
                     ret_workers = requests.get("{}/stats/workerStats/{}".format(config["url"], address), timeout=5).json()
                     for worker in ret_workers["workers"]:
                         tags["rig_id"] = worker["rigId"]
@@ -86,7 +86,7 @@ for k, v in config["api"].items():
                             "hashrate": worker["hashRate"],
                         }
                         print(InfluxDBLineProtocol("miner-pool-api", tags, data))   
-                except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.packages.urllib3.exceptions.NewConnectionError):
+                except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, ConnectionRefusedError):
                     print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                 except json.decoder.JSONDecodeError:
                     print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
