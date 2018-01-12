@@ -79,14 +79,14 @@ for k, v in config["api"].items():
                     ret_total = requests.get("{}/stats/address/{}".format(config["url"], address), timeout=5).json()
                     data = {
                         "total_hashes": ret_total["stats"]["hashes"],
-                        "balance": int(ret_total["stats"]["balance"]) / 100,
-                        "paid": int(ret_total["stats"]["paid"]) / 100,
+                        "balance": float(ret_total["stats"]["balance"]) / 100,
+                        "paid": float(ret_total["stats"]["paid"]) / 100,
                         "hashrate_10min_avg": disunitify(ret_total["stats"]["hashrate"]),
                     }
                     print(InfluxDBLineProtocol("miner-pool-api-account", tags, data, int(ret_total["stats"]["lastShare"]) * 1000000000))
                     for point in ret_total["charts"]["hashrate"]:
                         data = {
-                            "hashrate": int(point[1]),
+                            "hashrate": float(point[1]),
                         }
                         print(InfluxDBLineProtocol("miner-pool-api", tags, data, point[0] * 1000000000))
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
