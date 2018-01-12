@@ -49,7 +49,7 @@ for k, v in config["api"].items():
                     "ping": ret["connection"]["ping"],
                 }
                 print(InfluxDBLineProtocol("miner-xmr-stak", tags, data))
-            except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, ConnectionRefusedError):
+            except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
                 print("Failed to read data from device {}".format(name), file=sys.stderr)
             except json.decoder.JSONDecodeError:
                 print("Unexcepted data from device {}".format(name), file=sys.stderr)
@@ -72,7 +72,7 @@ for k, v in config["api"].items():
                             "hashrate": point[1],
                         }
                         print(InfluxDBLineProtocol("miner-pool-api", tags, data, point[0] * 1000000000))
-                except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
+                except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
                     print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                 except json.decoder.JSONDecodeError:
                     print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
@@ -86,7 +86,7 @@ for k, v in config["api"].items():
                             "hashrate": worker["hashRate"],
                         }
                         print(InfluxDBLineProtocol("miner-pool-api", tags, data))   
-                except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, ConnectionRefusedError):
+                except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
                     print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                 except json.decoder.JSONDecodeError:
                     print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
