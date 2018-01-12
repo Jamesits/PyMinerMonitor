@@ -32,7 +32,7 @@ for k, v in config["api"].items():
     if k == "xmr-stak":
         for name, config in v.items():
             try:
-                ret = requests.get(config["url"], timeout=1).json()
+                ret = requests.get(config["url"], timeout=5).json()
                 tags = {
                     "name": name
                 }
@@ -49,7 +49,7 @@ for k, v in config["api"].items():
                     "ping": ret["connection"]["ping"],
                 }
                 print(InfluxDBLineProtocol("miner-xmr-stak", tags, data))
-            except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
+            except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.packages.urllib3.exceptions.NewConnectionError):
                 print("Failed to read data from device {}".format(name), file=sys.stderr)
             except json.decoder.JSONDecodeError:
                 print("Unexcepted data from device {}".format(name), file=sys.stderr)
@@ -71,22 +71,22 @@ for k, v in config["api"].items():
                         data = {
                             "hashrate": point[1],
                         }
-                        print(InfluxDBLineProtocol("miner-xmr-stak", tags, data, point[0] * 1000000000))
+                        print(InfluxDBLineProtocol("miner-pool-api", tags, data, point[0] * 1000000000))
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
                     print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                 except json.decoder.JSONDecodeError:
                     print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                 # worker stats
                 try:
-                    time.sleep(5) # do not request too fast
+                    time.sleep(20) # do not request too fast
                     ret_workers = requests.get("{}/stats/workerStats/{}".format(config["url"], address), timeout=5).json()
                     for worker in ret_workers["workers"]:
                         tags["rig_id"] = worker["rigId"]
                         data = {
                             "hashrate": worker["hashRate"],
                         }
-                        print(InfluxDBLineProtocol("miner-xmr-stak", tags, data))   
-                except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
+                        print(InfluxDBLineProtocol("miner-pool-api", tags, data))   
+                except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.packages.urllib3.exceptions.NewConnectionError):
                     print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                 except json.decoder.JSONDecodeError:
                     print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
