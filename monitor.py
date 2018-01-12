@@ -11,6 +11,17 @@ os.chdir(os.path.dirname(sys.argv[0]))
 
 config = None
 
+def disunitify(s: str) -> float:
+    num, unit = s.split()
+    num = float(num)
+    unit = unit.lower()
+    if unit.startswith("k"):
+        num *= 1000
+    elif unit.startswith("m"):
+        num *= 1000000
+    
+    return num
+
 class InfluxDBLineProtocol:
     def __init__(self, measurement: str, tags: Dict[str, str], data: Dict[str, str], timestamp: int = int(time.time() * 1000000000)):
         self.measurement = measurement
@@ -66,9 +77,16 @@ for k, v in config["api"].items():
                 # total stats
                 try:
                     ret_total = requests.get("{}/stats/address/{}".format(config["url"], address), timeout=5).json()
+                    data = {
+                        "total_hashes": ret_total["stats"]["hashes"],
+                        "balance": int(ret_total["stats"]["balance"]) / 100,
+                        "paid": int(ret_total["stats"]["paid"]) / 100,
+                        "hashrate_10min_avg": disunitify(ret_total["stats"]["hashrate"]),
+                    }
+                    print(InfluxDBLineProtocol("miner-pool-api-account", tags, data, int(ret_total["stats"]["lastShare"]) * 1000000000))
                     for point in ret_total["charts"]["hashrate"]:
                         data = {
-                            "hashrate": point[1],
+                            "hashrate": int(point[1]),
                         }
                         print(InfluxDBLineProtocol("miner-pool-api", tags, data, point[0] * 1000000000))
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
@@ -82,7 +100,7 @@ for k, v in config["api"].items():
                     for worker in ret_workers["workers"]:
                         tags["rig_id"] = worker["rigId"]
                         data = {
-                            "hashrate": worker["hashRate"],
+                            "hashrate": disunitify(worker["hashRate"]),
                         }
                         print(InfluxDBLineProtocol("miner-pool-api-per-rig", tags, data))   
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
