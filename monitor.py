@@ -61,9 +61,11 @@ for k, v in config["api"].items():
                 }
                 print(InfluxDBLineProtocol("miner-xmr-stak", tags, data))
             except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
-                print("Failed to read data from device {}".format(name), file=sys.stderr)
+                # print("Failed to read data from device {}".format(name), file=sys.stderr)
+                pass
             except json.decoder.JSONDecodeError:
-                print("Unexcepted data from device {}".format(name), file=sys.stderr)
+                # print("Unexcepted data from device {}".format(name), file=sys.stderr)
+                pass
     elif k == "pool-api":
         for poolname, config in v.items():
             for addr_alias, address in config["addresses"].items():
@@ -90,9 +92,11 @@ for k, v in config["api"].items():
                         }
                         print(InfluxDBLineProtocol("miner-pool-api", tags, data, point[0] * 1000000000))
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
-                    print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    # print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    pass
                 except json.decoder.JSONDecodeError:
-                    print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    # print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    pass
                 # worker stats
                 try:
                     time.sleep(10) # do not request too fast
@@ -104,8 +108,10 @@ for k, v in config["api"].items():
                         }
                         print(InfluxDBLineProtocol("miner-pool-api-per-rig", tags, data))   
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
-                    print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    # print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    pass
                 except json.decoder.JSONDecodeError:
-                    print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    # print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    pass
     else:
         print("Unknown API type {}".format(k), file=sys.stderr)
