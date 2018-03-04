@@ -74,6 +74,22 @@ for k, v in config["api"].items():
                 }
                 if "tags" in config:
                     tags = {**tags, **config["tags"]}
+                # global stats
+                try:
+                    ret_global = requests.get("{}/price".format(config["url"]), timeout=5).json()
+                    data = {
+                        "price_usd": ret_global[0]["price_usd"],
+                        "price_btc": ret_global[0]["price_btc"],
+                        "24h_volume_usd": ret_global[0]["24h_volume_usd"],
+                        "market_cap_usd": ret_global[0]["market_cap_usd"],
+                        "available_supply": ret_global[0]["available_supply"],
+                        "percent_change_1h": ret_global[0]["percent_change_1h"],
+                    }
+                    print(InfluxDBLineProtocol("miner-pool-api-global", tags, data, int(ret_global[0]["last_updated"]) * 1000000000))
+                except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
+                    print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                except json.decoder.JSONDecodeError:
+                    print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                 # total stats
                 try:
                     ret_total = requests.get("{}/stats/address/{}".format(config["url"], address), timeout=5).json()
