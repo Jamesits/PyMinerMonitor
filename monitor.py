@@ -89,9 +89,11 @@ for k, v in config["api"].items():
                     }
                     print(InfluxDBLineProtocol("miner-pool-api-global", tags, data, int(ret_global[0]["last_updated"]) * 1000000000))
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
-                    print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    # print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    pass
                 except json.decoder.JSONDecodeError:
-                    print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    #print("Unexcepted data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
+                    pass
                 # total stats
                 try:
                     ret_total = requests.get("{}/stats/address/{}".format(config["url"], address), timeout=5).json()
