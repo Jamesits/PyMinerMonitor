@@ -78,16 +78,13 @@ for k, v in config["api"].items():
                     tags = {**tags, **config["tags"]}
                 # global stats
                 try:
-                    ret_global = requests.get("{}/price".format(config["url"]), timeout=5).json()
+                    ret_global = requests.get("{}/poolStats".format(config["url"]), timeout=5).json()
                     data = {
-                        "price_usd": ret_global[0]["price_usd"],
-                        "price_btc": ret_global[0]["price_btc"],
-                        "24h_volume_usd": ret_global[0]["24h_volume_usd"],
-                        "market_cap_usd": ret_global[0]["market_cap_usd"],
-                        "available_supply": ret_global[0]["available_supply"],
-                        "percent_change_1h": ret_global[0]["percent_change_1h"],
+                        "difficulty": str(ret_global["network"]["difficulty"]) + "i",
+                        "height": str(ret_global["network"]["height"]) + "i",
+                        "reward": str(ret_global["network"]["reward"]) + "i",
                     }
-                    print(InfluxDBLineProtocol("miner-pool-api-global", tags, data, int(ret_global[0]["last_updated"]) * 1000000000))
+                    print(InfluxDBLineProtocol("miner-pool-api-global", tags, data, int(ret_global["network"]["timestamp"]) * 1000000000))
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
                     # print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                     pass
