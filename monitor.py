@@ -141,18 +141,18 @@ try:
         print(InfluxDBLineProtocol(measurement=measurement,
                                    tags={
                                        "id": coin["id"],
-                                       "name": coin["name"],
+                                       "name": coin["name"].replace(" ", "\\ "),
                                        "symbol": coin["symbol"]
                                        },
                                    data={
-                                        "rank": coin["rank"], 
+                                        "rank": coin["rank"] + "i", 
                                         "price_usd": coin["price_usd"], 
                                         "price_btc": coin["price_btc"], 
                                         "24h_volume_usd": coin["24h_volume_usd"], 
                                         "market_cap_usd": coin["market_cap_usd"], 
                                         "available_supply": coin["available_supply"], 
                                         "total_supply": coin["total_supply"], 
-                                        "max_supply": coin["max_supply"], 
+                                        "max_supply": coin["max_supply"] or 0, 
                                         "percent_change_1h": coin["percent_change_1h"], 
                                         "percent_change_24h": coin["percent_change_24h"], 
                                         "percent_change_7d": coin["percent_change_7d"], 
