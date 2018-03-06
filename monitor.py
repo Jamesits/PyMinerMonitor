@@ -133,3 +133,36 @@ for k, v in config["api"].items():
                     pass
     else:
         print("Unknown API type {}".format(k), file=sys.stderr)
+
+measurement = "coin_price"
+try:
+    data = requests.get("https://api.coinmarketcap.com/v1/ticker/", params={"convert": "CNY"}).json()
+    for coin in data:
+        print(InfluxDBLineProtocol(measurement=measurement,
+                                   tags={
+                                       "id": coin["id"],
+                                       "name": coin["name"],
+                                       "symbol": coin["symbol"]
+                                       },
+                                   data={
+                                        "rank": coin["rank"], 
+                                        "price_usd": coin["price_usd"], 
+                                        "price_btc": coin["price_btc"], 
+                                        "24h_volume_usd": coin["24h_volume_usd"], 
+                                        "market_cap_usd": coin["market_cap_usd"], 
+                                        "available_supply": coin["available_supply"], 
+                                        "total_supply": coin["total_supply"], 
+                                        "max_supply": coin["max_supply"], 
+                                        "percent_change_1h": coin["percent_change_1h"], 
+                                        "percent_change_24h": coin["percent_change_24h"], 
+                                        "percent_change_7d": coin["percent_change_7d"], 
+                                        "price_cny": coin["price_cny"], 
+                                        "24h_volume_cny": coin["24h_volume_cny"], 
+                                        "market_cap_cny": coin["market_cap_cny"],
+                                       },
+                                   timestamp=int(coin["last_updated"]) * 1000000000,
+                                   )
+              )
+except:
+    pass
+    
