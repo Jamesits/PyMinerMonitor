@@ -163,3 +163,39 @@ try:
 except:
     pass
     
+
+measurement = "smzdw"
+try:
+    data = requests.get("https://www.smzdw.org/json/gpu_mining.json").json()
+    for name, coin in data["coins"].items():
+        print(InfluxDBLineProtocol(measurement=measurement,
+                                   tags={
+                                       "id": coin["id"],
+                                       "name": name,
+                                       "symbol": coin["tag"],
+                                       "algorithm": coin["algorithm"],
+                                       "exchange_rate_curr": coin["exchange_rate_curr"],
+                                       },
+                                   data={
+                                        "block_time": coin["block_time"], 
+                                        "block_reward": coin["block_reward"], 
+                                        "block_reward24": coin["block_reward24"], 
+                                        "last_block": str(coin["last_block"]) + "i", 
+                                        "difficulty": coin["difficulty24"], 
+                                        "nethash": coin["nethash"], 
+                                        "exchange_rate": coin["exchange_rate"], 
+                                        "exchange_rate24": coin["exchange_rate24"], 
+                                        "exchange_rate_vol": coin["exchange_rate_vol"], 
+                                        "market_cap": coin["market_cap"][1:], 
+                                        "estimated_rewards": coin["estimated_rewards"], 
+                                        "estimated_rewards24": coin["estimated_rewards24"], 
+                                        "btc_revenue": coin["btc_revenue"], 
+                                        "btc_revenue24": coin["btc_revenue24"],
+                                        "profitability": str(coin["profitability"]) + "i",
+                                        "profitability24": str(coin["profitability24"]) + "i",
+                                       },
+                                   timestamp=int(coin["timestamp"]) * 1000000000,
+                                   )
+              )
+except:
+    pass
