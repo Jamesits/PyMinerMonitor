@@ -19,7 +19,6 @@ def disunitify(s: str) -> float:
         num *= 1000
     elif unit.startswith("m"):
         num *= 1000000
-    
     return num
 
 class InfluxDBLineProtocol:
