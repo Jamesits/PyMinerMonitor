@@ -65,7 +65,6 @@ for k, v in config["api"].items():
                     "ping": ret["connection"]["ping"],
                 }
                 print(InfluxDBLineProtocol("miner-xmr-stak", tags, data))
-                sys.stdout.flush()
             except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
                 # print("Failed to read data from device {}".format(name), file=sys.stderr)
                 pass
@@ -91,7 +90,6 @@ for k, v in config["api"].items():
                         "reward": str(ret_global["network"]["reward"]) + "i",
                     }
                     print(InfluxDBLineProtocol("miner-pool-api-global", tags, data, int(ret_global["network"]["timestamp"]) * 1000000000))
-                    sys.stdout.flush()
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
                     # print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                     pass
@@ -113,7 +111,6 @@ for k, v in config["api"].items():
                             "hashrate": float(point[1]),
                         }
                         print(InfluxDBLineProtocol("miner-pool-api", tags, data, point[0] * 1000000000))
-                        sys.stdout.flush()
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
                     # print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                     pass
@@ -130,7 +127,6 @@ for k, v in config["api"].items():
                             "hashrate": disunitify(worker["hashRate"]),
                         }
                         print(InfluxDBLineProtocol("miner-pool-api-per-rig", tags, data))   
-                        sys.stdout.flush()
                 except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
                     # print("Failed to read data from pool {} address {}".format(poolname, addr_alias), file=sys.stderr)
                     pass
@@ -169,11 +165,9 @@ try:
                                    timestamp=int(coin["last_updated"]) * 1000000000,
                                    )
               )
-        sys.stdout.flush()
 except:
     pass
     
-
 measurement = "smzdw"
 
 for api in (
@@ -188,7 +182,7 @@ for api in (
                                            "id": coin["id"],
                                            "name": name.replace(" ", "\\ "),
                                            "symbol": coin["tag"],
-                                           "algorithm": coin["algorithm"].replace(" ", "\\ "),
+                                           "algorithm": coin["algorithm"].replace(" ", "\\ ").replace(",", "\,"),
                                            "exchange_rate_curr": coin["exchange_rate_curr"],
                                            },
                                        data={
@@ -213,6 +207,5 @@ for api in (
                                        timestamp=int(coin["timestamp"]) * 1000000000,
                                        )
                   )
-            sys.stdout.flush()
     except:
         pass
